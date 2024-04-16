@@ -1,0 +1,76 @@
+Foods,Protein/g,FoodID
+Chicken Breast,0.31,1
+Chicken Thigh,0.1966,2
+Chicken Wing,0.141,3
+Pork Chop,0.202,4
+Pork Loin,0.294,5
+Pork Belly,0.231,6
+Ribeye Steak,0.211,7
+New York Strip,0.232,8
+Flank Steak,0.284,9
+Lamb Chop,0.285,10
+Salmon,0.24,11
+Tuna,0.292,12
+Tilapia,0.176,13
+Yellow Tail,0.23142,14
+Egg,0.1256,15
+Milk,0.034,16
+Spinach,0.0063,17
+Lettuce,0.0113,18
+Apple,0.0041,19
+Watermelon,0.0032,20
+Pineapple,0.0058,21
+Apple Juice,0.0053,22
+Orange,0.0061,23
+Dragon Fruit,0.011,24
+Cheese Pizza,0.095,25
+Pepperoni Pizza,0.133,26
+BBQ Chicken Pizza,0.121,27
+Chocolate Milk,0.034,28
+Pickles,0.0061,29
+Double Cheeseburger,0.256,30
+Hot Dog,0.078,31
+Rice,0.027,32
+Pasta Noodles,0.123,33
+Macaroni and Cheese,0.078,34
+White Bread,0.094,35
+Whole Wheat Bread,0.123,36
+Cheetos,0.058,37
+Grilled Cheese,0.111,38
+Fried Rice,0.041,39
+Chow Mein,0.102,40
+Orange Chicken,0.055,41
+Brocoli Beef,0.038,42
+Canned Salmon,0.202,43
+Canned Tuna,0.247,44
+Beef Taco,0.113,45
+Pulled Pork,0.235,46
+Brisket,0.312,47
+Coleslaw,0.012,48
+Mayo,0.011,49
+Oyster,0.046,50
+Rotisserie Chicken,0.176,51
+Cheese,0.233,52
+Coffee,0.0012,53
+Chicken Sandwich,0.163,54
+Bacon,0.137,55
+Tamale,0.904,56
+Chicken Noodle Soup,0.038,57
+Protein Powder,0.781,58
+Greek Yogurt,0.106,59
+Banana,0.0119,60
+Peanut Butter,0.225,61
+Butter,0.00985,62
+Caesar Salad,0.043,63
+Shrimp,0.24,64
+Lobster,0.264,65
+Cricket,0.40658,66
+Ham,0.266,67
+Corn Bread,0.034338,68
+Pancake,0.0634,69
+Waffle,0.062,70
+Falafel,0.103,71
+Cookie Dough Ice Cream,0.0318,72
+Alligator,0.233,73
+Escargot,0.161,74
+Turkey,0.1764,75
