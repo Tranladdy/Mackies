@@ -12,9 +12,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Practice.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: Assets/Scenes/Local Multiplayer.unity
-    guid: 3353e040cdb71d14ab1472c73e31a50e
+    path: Assets/Scenes/Multi Local.unity
+    guid: 41aad70948d93c04fab28da0c253eea8
   - enabled: 1
-    path: Assets/Scenes/CPU Multiplayer.unity
-    guid: a1ddeb985a3728540ad58ae192398fed
+    path: Assets/Scenes/Multi CPU.unity
+    guid: 9b8621a5c3d27f94fbbb0c93162de8d5
+  - enabled: 1
+    path: Assets/Scenes/Online Multiplayer.unity
+    guid: 19b53889ca7bf1442a677b138b97f7dc
   m_configObjects: {}

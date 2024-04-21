@@ -8,4 +8,9 @@ public class MainMenu : MonoBehaviour
     public void playButton() {
         audio.Play();
     }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
 }

@@ -10,6 +10,8 @@ TagManager:
   - Win1
   - Win2
   - Tie
+  - Wait
+  - Go
   layers:
   - Default
   - TransparentFX

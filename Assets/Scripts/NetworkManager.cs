@@ -1,39 +1,113 @@
-using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.Networking;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class NetworkManager : MonoBehaviour
+public class NetworkManager : MonoBehaviourPunCallbacks
 {
-    // Base URL for the HTTP server
-    private string baseUrl = "http://localhost:5000/";
-
-    // Method to send request to the server
-    public void SendRequest(int grams, string protein, Action<string> onResponseReceived)
+    void Start()
     {
-        StartCoroutine(PerformRequest(grams, protein, onResponseReceived));
+        ConnectToPhoton();
     }
 
-    // Coroutine to perform the request
-    private IEnumerator PerformRequest(int grams, string protein, Action<string> onResponseReceived)
+    private void Awake()
     {
-        string url = baseUrl + "predict"; // Assuming 'predict' is your endpoint
-        var request = new UnityWebRequest(url, "POST");
-        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(new { grams = grams, protein = protein }));
-        request.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
+        PhotonNetwork.AutomaticallySyncScene = true;
+    }
 
-        yield return request.SendWebRequest();
-
-        if (request.result != UnityWebRequest.Result.Success)
+    private void ConnectToPhoton()
+    {
+        if (!PhotonNetwork.IsConnected)
         {
-            Debug.LogError("Error: " + request.error);
+            PhotonNetwork.ConnectUsingSettings();  // Only connect if not already connected
+        }
+    }
+
+    public void Connect()
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.JoinRandomRoom();  // Try joining a room if already connected to Photon
         }
         else
         {
-            Debug.Log("Response: " + request.downloadHandler.text);
-            onResponseReceived?.Invoke(request.downloadHandler.text);
+            ConnectToPhoton();  // Attempt to connect to Photon if disconnected
         }
+    }
+
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        Debug.Log("Tried to join a room and failed, creating a new room.");
+        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
+    }
+
+    public override void OnJoinedRoom()
+    {
+        Debug.Log("Joined a room!");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel(4);
+        }
+    }
+
+    public override void OnLeftRoom()
+    {
+        Debug.Log("Left the room, loading main menu.");
+        PhotonNetwork.LoadLevel("Menu");  // Load the main menu scene
+    }
+
+    // Reset game objects without destroying them
+    public void ResetGameObjects()
+    {
+        foreach (var go in FindObjectsOfType<PhotonView>())
+        {
+            go.gameObject.SetActive(false); // Deactivate instead of destroying
+            // Reset other necessary components or properties
+        }
+    }
+
+    // Call this method when leaving a room or changing scenes
+    private void CleanUpScene()
+    {
+        Debug.Log("Initiating cleanup and leaving the room...");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            ResetGameObjects();  // Reset or deactivate game objects as needed
+        }
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();  // Leave the room
+        }
+        else
+        {
+            PhotonNetwork.LoadLevel("Menu");  // Directly load the main menu if not in a room
+        }
+    }
+
+    public override void OnMasterClientSwitched(Photon.Realtime.Player newMasterClient)
+    {
+        Debug.Log("New Master Client: " + newMasterClient.NickName);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // The new master client might need to perform cleanup or other actions.
+            PhotonNetwork.DestroyAll();
+        }
+    }
+
+    public void LeaveRoomAndReturnToLobby()
+    {
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.LeaveRoom();
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.Log("Disconnected from the game server: " + cause);
+        ConnectToPhoton();  // Attempt reconnection
+    }
+
+    public override void OnConnectedToMaster()
+    {
+        Debug.Log("Connected to Master Server. Now you can join or create a room.");
+        PhotonNetwork.JoinLobby();  // Optionally join a lobby if needed
     }
 }

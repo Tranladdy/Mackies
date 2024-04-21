@@ -349,7 +349,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 968480659}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: Local
+        m_MethodName: MultiLocal
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -938,7 +938,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 916637820}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: CPU
+        m_MethodName: MultiCPU
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1497,7 +1497,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 968480659}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: Local
+        m_MethodName: MultiLocal
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3243,7 +3243,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 968480659}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: Local
+        m_MethodName: MultiLocal
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3867,7 +3867,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 968480659}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: Local
+        m_MethodName: MultiLocal
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4546,7 +4546,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 916637820}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: CPU
+        m_MethodName: MultiCPU
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4863,6 +4863,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 611713912}
   m_CullTransparentMesh: 1
+--- !u!1 &614246711
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 614246713}
+  - component: {fileID: 614246712}
+  m_Layer: 0
+  m_Name: Network Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &614246712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 614246711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd927f2c9559173448e17d6ea0a6944d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &614246713
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 614246711}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1023.33295, y: 589.28894, z: -0.19966832}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &628303420
 GameObject:
   m_ObjectHideFlags: 0
@@ -5294,7 +5338,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 916637820}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: CPU
+        m_MethodName: MultiCPU
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7888,7 +7932,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 968480659}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: Local
+        m_MethodName: MultiLocal
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9345,7 +9389,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 916637820}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: CPU
+        m_MethodName: MultiCPU
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10573,6 +10617,18 @@ MonoBehaviour:
       - m_Target: {fileID: 2043063918}
         m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
         m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1657809009}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: Quit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -14047,7 +14103,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 916637820}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: CPU
+        m_MethodName: MultiCPU
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -15056,7 +15112,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 968480659}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: Local
+        m_MethodName: MultiLocal
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -15347,7 +15403,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 916637820}
         m_TargetAssemblyTypeName: GameMenu, Assembly-CSharp
-        m_MethodName: CPU
+        m_MethodName: MultiCPU
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -17492,6 +17548,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 614246712}
+        m_TargetAssemblyTypeName: NetworkManager, Assembly-CSharp
+        m_MethodName: Connect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2096517910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17848,4 +17916,5 @@ SceneRoots:
   - {fileID: 1490822778}
   - {fileID: 790826265}
   - {fileID: 1657809007}
+  - {fileID: 614246713}
   - {fileID: 459662137}
