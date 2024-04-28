@@ -75,6 +75,13 @@ MonoBehaviour:
   - DisplayExpectedResultRPC
   - ClearText
   - UpdatePlayerNameOnAllClients
+  - PlaySoundBad
+  - PlaySoundDisappointing
+  - PlaySoundExcellent
+  - PlaySoundGood
+  - PlaySoundGreat
+  - PlaySoundOkay
+  - PlaySoundPerfect
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

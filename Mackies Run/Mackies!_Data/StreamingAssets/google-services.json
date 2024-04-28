@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "747689046954",
+    "firebase_url": "https://mackies-9f1b0-default-rtdb.firebaseio.com",
+    "project_id": "mackies-9f1b0",
+    "storage_bucket": "mackies-9f1b0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:747689046954:android:93074a50e89c6415aa71d3",
+        "android_client_info": {
+          "package_name": "com.tranthony.Mackies"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbrzt_Ckh-1u-hxYfi8RjXRyrrwNZ6tzY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

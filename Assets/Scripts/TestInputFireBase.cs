@@ -33,6 +33,16 @@ public class TestInputFireBase : MonoBehaviour
 
     private int round = 0; // Variable to store the round number
 
+    public AudioSource audioSound;
+    public AudioSource dissapointing;
+    public AudioSource bad;
+    public AudioSource okay;
+    public AudioSource good;
+    public AudioSource great;
+    public AudioSource excellent;
+    public AudioSource perfect;
+
+
     private const float timerDuration = 10f; // Duration of the timer in seconds
     private void LogFoodInformation()
     {
@@ -129,41 +139,48 @@ public class TestInputFireBase : MonoBehaviour
             score += 12;
             nonTMPText.text = "Perfect!!!! +12 Points";
             nonTMPText.color = Color.cyan;
+            perfect.Play();
         }
         else if (percentageDifference <= 3f)
         {
             score += 6;
             nonTMPText.text = "Excellent!!! +6 Points";
             nonTMPText.color = Color.green;
+            excellent.Play();
         }
         else if (percentageDifference <= 5f)
         {
             score += 5;
             nonTMPText.text = "Great Job! +5 Points";
             nonTMPText.color = Color.green;
+            great.Play();
         }
         else if (percentageDifference <= 20f)
         {
             score += 4;
             nonTMPText.text = "Good Job +4 Points";
             nonTMPText.color = Color.yellow;
+            good.Play();
         }
         else if (percentageDifference <= 30f)
         {
             score += 3;
             nonTMPText.text = "Unsatisfactory. +3 Points";
             nonTMPText.color = Color.yellow;
+            okay.Play();
         }
         else if (percentageDifference <= 40f)
         {
             score += 2;
             nonTMPText.text = "Bad.. +2 Points";
             nonTMPText.color = Color.red;
+            bad.Play();
         }
         else
         {
             nonTMPText.text = "Disappointing...";
             nonTMPText.color = Color.red;
+            dissapointing.Play();
         }
     }
 
@@ -200,10 +217,12 @@ public class TestInputFireBase : MonoBehaviour
             // Generate random grams here
             currentGrams = GenerateRandomGrams();
             gramsText.text = currentGrams + "g";  // Display the generated grams in UI
+            audioSound.Play();
             scaleGramsText.text = currentGrams + "";  // Update any other UI elements as necessary
 
             yield return new WaitForSeconds(3.5f);
             TMPText.text = currentProtein + "?";
+            audioSound.Play();
             
 
             // Get the image ID for the current protein and load it

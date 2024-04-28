@@ -64,6 +64,15 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
 
     public PlayfabManager playfabManager;
 
+    public AudioSource audioSound;
+    public AudioSource dissapointing;
+    public AudioSource bad;
+    public AudioSource okay;
+    public AudioSource good;
+    public AudioSource great;
+    public AudioSource excellent;
+    public AudioSource perfect;
+
     private void Start()
     {
         nonTMPText.text = defaultResultText;
@@ -72,6 +81,48 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         userInputField.interactable = PhotonNetwork.IsMasterClient; // Master client starts first
         UpdatePlayerTurnText();
         StartCoroutine(InitializeGame());
+    }
+
+    [PunRPC]
+    void PlaySoundPerfect()
+    {
+        perfect.Play();
+    }
+
+    [PunRPC]
+    void PlaySoundExcellent()
+    {
+        excellent.Play();
+    }
+
+    [PunRPC]
+    void PlaySoundGreat()
+    {
+        great.Play();
+    }
+
+    [PunRPC]
+    void PlaySoundGood()
+    {
+        good.Play();
+    }
+
+    [PunRPC]
+    void PlaySoundOkay()
+    {
+        okay.Play();
+    }
+
+    [PunRPC]
+    void PlaySoundBad()
+    {
+        bad.Play();
+    }
+
+    [PunRPC]
+    void PlaySoundDisappointing()
+    {
+        dissapointing.Play();
     }
 
     private IEnumerator InitializeGame()
@@ -217,41 +268,48 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
             pointsToAdd = 12;
             message = "Perfect Player 1!!!! +12 Points";
             color = Color.cyan;
+            photonView.RPC("PlaySoundPerfect", RpcTarget.All);
         }
         else if (percentageDifference <= 7f)
         {
             pointsToAdd = 6;
             message = "Excellent Player 1!!! +6 Points";
             color = Color.green;
+            photonView.RPC("PlaySoundExcellent", RpcTarget.All);
         }
         else if (percentageDifference <= 9f)
         {
             pointsToAdd = 5;
             message = "Great Job Player 1! +5 Points";
             color = Color.green;
+            photonView.RPC("PlaySoundGreat", RpcTarget.All);
         }
         else if (percentageDifference <= 30f)
         {
             pointsToAdd = 4;
             message = "Good Job Player 1 +4 Points";
             color = Color.yellow;
+            photonView.RPC("PlaySoundGood", RpcTarget.All);
         }
         else if (percentageDifference <= 40f)
         {
             pointsToAdd = 3;
             message = "Unsatisfactory Player 1. +3 Points";
             color = Color.yellow;
+            photonView.RPC("PlaySoundOkay", RpcTarget.All);
         }
         else if (percentageDifference <= 50f)
         {
             pointsToAdd = 2;
             message = "Bad Player 1.. +2 Points";
             color = Color.red;
+            photonView.RPC("PlaySoundBad", RpcTarget.All);
         }
         else if (percentageDifference > 50f)
         {
             message = "Disappointing Player 1...";
             color = Color.red;
+            photonView.RPC("PlaySoundDisappointing", RpcTarget.All);
         }
 
         player1Score += pointsToAdd;
@@ -289,41 +347,48 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
             pointsToAdd = 12;
             message = "Perfect Player 2!!!! +12 Points";
             color = Color.cyan;
+            photonView.RPC("PlaySoundPerfect", RpcTarget.All);
         }
         else if (percentageDifference <= 7f)
         {
             pointsToAdd = 6;
             message = "Excellent Player 2!!! +6 Points";
             color = Color.green;
+            photonView.RPC("PlaySoundExcellent", RpcTarget.All);
         }
         else if (percentageDifference <= 9f)
         {
             pointsToAdd = 5;
             message = "Great Job Player 2! +5 Points";
             color = Color.green;
+            photonView.RPC("PlaySoundGreat", RpcTarget.All);
         }
         else if (percentageDifference <= 30f)
         {
             pointsToAdd = 4;
             message = "Good Job Player 2 +4 Points";
             color = Color.yellow;
+            photonView.RPC("PlaySoundGood", RpcTarget.All);
         }
         else if (percentageDifference <= 40f)
         {
             pointsToAdd = 3;
             message = "Unsatisfactory Player 2. +3 Points";
             color = Color.yellow;
+            photonView.RPC("PlaySoundOkay", RpcTarget.All);
         }
         else if (percentageDifference <= 50f)
         {
             pointsToAdd = 2;
             message = "Bad Player 2.. +2 Points";
             color = Color.red;
+            photonView.RPC("PlaySoundBad", RpcTarget.All);
         }
         else if (percentageDifference > 50f)
         {
             message = "Disappointing Player 2...";
             color = Color.red;
+            photonView.RPC("PlaySoundDisappointing", RpcTarget.All);
         }
 
         player2Score += pointsToAdd;
@@ -562,10 +627,12 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
             
             yield return new WaitForSeconds(1.5f);
             gramsText.text = currentGrams + "g";  // Display the generated grams in UI
+            audioSound.Play();
             scaleGramsText.text = currentGrams + "";  // Update any other UI elements as necessary
 
             LogFoodInformation();
             yield return new WaitForSeconds(2.5f);
+            audioSound.Play();
             TMPText.text = currentProtein + "?";
             
             // Get the image ID for the current protein and load it

@@ -49,9 +49,18 @@ public class TestInputMultiFirebase : MonoBehaviour
     private Vector3 startingPosition; // Variable to store the starting position of the sprite object
 
     private int maxRounds;  // Added maxRounds variable
-     private int round = 1; // Variable to store the current round number
+    private int round = 1; // Variable to store the current round number
 
     private const float timerDuration = 10f; // Duration of the timer in seconds
+
+    public AudioSource audioSound;
+    public AudioSource dissapointing;
+    public AudioSource bad;
+    public AudioSource okay;
+    public AudioSource good;
+    public AudioSource great;
+    public AudioSource excellent;
+    public AudioSource perfect;
 
     private void Start()
     {
@@ -168,41 +177,48 @@ public class TestInputMultiFirebase : MonoBehaviour
             player1Score += 12;
             message = "Perfect Player 1!!!! +12 Points";
             color = Color.cyan;
+            perfect.Play();
         }
         else if (percentageDifference <= 7f)
         {
             player1Score += 6;
             message = "Excellent Player 1!!! +6 Points";
             color = Color.green;
+            excellent.Play();
         }
         else if (percentageDifference <= 9f)
         {
             player1Score += 5;
             message = "Great Job Player 1! +5 Points";
             color = Color.green;
+            great.Play();
         }
         else if (percentageDifference <= 30f)
         {
             player1Score += 4;
             message = "Good Job Player 1 +4 Points";
             color = Color.yellow;
+            good.Play();
         }
         else if (percentageDifference <= 40f)
         {
             player1Score += 3;
             message = "Unsatisfactory Player 1. +3 Points";
             color = Color.yellow;
+            okay.Play();
         }
         else if (percentageDifference <= 50f)
         {
             player1Score += 2;
             message = "Bad Player 1.. +2 Points";
             color = Color.red;
+            bad.Play();
         }
         else if (percentageDifference > 50f)
         {
             message = "Disappointing Player 1...";
             color = Color.red;
+            dissapointing.Play();
         }
 
         nonTMPText.text = message;
@@ -238,41 +254,48 @@ public class TestInputMultiFirebase : MonoBehaviour
             player2Score += 12;
             message = "Perfect Player 2!!!! +12 Points";
             color = Color.cyan;
+            perfect.Play();
         }
         else if (percentageDifference <= 7f)
         {
             player2Score += 6;
             message = "Excellent Player 2!!! +6 Points";
             color = Color.green;
+            excellent.Play();
         }
         else if (percentageDifference <= 9f)
         {
             player2Score += 5;
             message = "Great Job Player 2! +5 Points";
             color = Color.green;
+            great.Play();
         }
         else if (percentageDifference <= 30f)
         {
             player2Score += 4;
             message = "Good Job Player 2 +4 Points";
             color = Color.yellow;
+            good.Play();
         }
         else if (percentageDifference <= 40f)
         {
             player2Score += 3;
             message = "Unsatisfactory Player 2. +3 Points";
             color = Color.yellow;
+            okay.Play();
         }
         else if (percentageDifference <= 50f)
         {
             player2Score += 2;
             message = "Bad Player 2.. +2 Points";
             color = Color.red;
+            bad.Play();
         }
         else if (percentageDifference > 50f)
         {
             message = "Disappointing Player 2...";
             color = Color.red;
+            dissapointing.Play();
         }
 
         nonTMPText.text = message;
@@ -388,10 +411,12 @@ public class TestInputMultiFirebase : MonoBehaviour
             
             yield return new WaitForSeconds(1.5f);
             gramsText.text = currentGrams + "g";  // Display the generated grams in UI
+            audioSound.Play();
             scaleGramsText.text = currentGrams + "";  // Update any other UI elements as necessary
 
             LogFoodInformation();
             yield return new WaitForSeconds(2.5f);
+            audioSound.Play();
             TMPText.text = currentProtein + "?";
             
             // Get the image ID for the current protein and load it

@@ -9,6 +9,14 @@ public class MainMenu : MonoBehaviour
         audioSound.Play();
     }
 
+    private void OnCollisionEnter2D(Collision2D obj)
+    {
+        if(obj.gameObject.CompareTag("Scale"))
+        {
+            audioSound.Play();
+        }
+    }
+
     public void Quit()
     {
         Application.Quit();

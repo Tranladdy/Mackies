@@ -9,12 +9,12 @@ public class GameMenu : MonoBehaviour
       SceneManager.LoadScene(0);
    }
    public void Practice() {
-      SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+      SceneManager.LoadScene(1);
    }
    public void MultiLocal() {
-      SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 2);
+      SceneManager.LoadScene(2);
    }
    public void MultiCPU() {
-      SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 3);
+      SceneManager.LoadScene(3);
    }
 }

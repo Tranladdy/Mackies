@@ -15,6 +15,8 @@ public class QuestionPop : MonoBehaviour
     public float delayTime2 = 2.0f; // Delay time in seconds for objectToEnable2
     public float delayTime3 = 3.0f; // Delay time in seconds for objectToEnable3
 
+    public AudioSource audioSound;
+
     private void OnCollisionEnter2D(Collision2D obj)
     {
         // Check if the collision involves the game object you want to detect
@@ -24,6 +26,11 @@ public class QuestionPop : MonoBehaviour
             StartCoroutine(EnableObjectWithDelay(objectToEnable1, delayTime1));
             StartCoroutine(EnableObjectWithDelay(objectToEnable2, delayTime2));
             StartCoroutine(EnableObjectWithDelay(objectToEnable3, delayTime3));
+            audioSound.Play();
+        }
+        else if(obj.gameObject.CompareTag("Food"))
+        {
+            audioSound.Play();
         }
     }
 

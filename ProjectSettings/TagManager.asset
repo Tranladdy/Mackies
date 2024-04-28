@@ -12,6 +12,7 @@ TagManager:
   - Tie
   - Wait
   - Go
+  - Food
   layers:
   - Default
   - TransparentFX
