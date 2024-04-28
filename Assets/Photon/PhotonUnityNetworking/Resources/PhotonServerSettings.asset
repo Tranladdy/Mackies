@@ -66,6 +66,15 @@ MonoBehaviour:
   - DisplayMessage
   - DisplayDefault
   - InitializeGameState
+  - StopAllCoroutinesOnClients
+  - UpdateFoodImage
+  - UpdateFoodImageOnAllClients
+  - UpdateScoresOnAllClients
+  - HandleGameEnd
+  - ResetDefaultText
+  - DisplayExpectedResultRPC
+  - ClearText
+  - UpdatePlayerNameOnAllClients
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

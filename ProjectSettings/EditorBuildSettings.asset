@@ -9,15 +9,27 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: b545ee8806f973e4ca834a3020e848b0
   - enabled: 1
-    path: Assets/Scenes/Practice.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Scenes/PracticeFirebase.unity
+    guid: 30423b38f243fff4d9f23b3098cb97e5
   - enabled: 1
-    path: Assets/Scenes/Multi Local.unity
-    guid: 41aad70948d93c04fab28da0c253eea8
+    path: Assets/Scenes/Multi Local Firebase.unity
+    guid: 0cc29649ce585284b8829ecb16eb9f51
   - enabled: 1
-    path: Assets/Scenes/Multi CPU.unity
-    guid: 9b8621a5c3d27f94fbbb0c93162de8d5
+    path: Assets/Scenes/Multi CPU Firebase.unity
+    guid: b6e299f4632faaf46aba5dc2cafead5f
   - enabled: 1
+    path: Assets/Scenes/Online Multiplayer Firebase.unity
+    guid: 55554e9b29045124089baf6cc3a51a2a
+  - enabled: 0
     path: Assets/Scenes/Online Multiplayer.unity
     guid: 19b53889ca7bf1442a677b138b97f7dc
+  - enabled: 0
+    path: Assets/Scenes/Practice.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 0
+    path: Assets/Scenes/Multi Local.unity
+    guid: 41aad70948d93c04fab28da0c253eea8
+  - enabled: 0
+    path: Assets/Scenes/Multi CPU.unity
+    guid: 9b8621a5c3d27f94fbbb0c93162de8d5
   m_configObjects: {}

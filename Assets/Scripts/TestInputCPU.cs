@@ -54,6 +54,10 @@ public class TestInputCPU : MonoBehaviour
 
     private const float timerDuration = 10f; // Duration of the timer in seconds
 
+    public PlayfabManager playfabManager;
+
+    public GameObject birdie;
+
     private void Start()
     {
         // Initialize from RoundManager
@@ -355,6 +359,7 @@ public class TestInputCPU : MonoBehaviour
         // Deactivate the Game Canvas
         if (gameCanvas != null)
         {
+            birdie.SetActive(false);
             gameCanvas.SetActive(false);
         }
 
@@ -363,6 +368,7 @@ public class TestInputCPU : MonoBehaviour
         {
             if (player1VictoryScreen != null)
             {
+                playfabManager.SendLeaderboard(player1Score);
                 player1VictoryScreen.SetActive(true);
             }
         }
@@ -370,6 +376,7 @@ public class TestInputCPU : MonoBehaviour
         {
             if (player2VictoryScreen != null)
             {
+                playfabManager.SendLeaderboard(player1Score);
                 player2VictoryScreen.SetActive(true);
             }
         }
@@ -377,6 +384,7 @@ public class TestInputCPU : MonoBehaviour
         {
             if (tieScreen != null)
             {
+                playfabManager.SendLeaderboard(player1Score);
                 tieScreen.SetActive(true);
             }
         }

@@ -89,7 +89,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             // The new master client might need to perform cleanup or other actions.
-            PhotonNetwork.DestroyAll();
         }
     }
 

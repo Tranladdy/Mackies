@@ -140,8 +140,6 @@ public class TestInputMulti : MonoBehaviour
 
     private IEnumerator UpdateScorePlayer1(float percentageDifference)
     {
-        //Debug.Log("Percentage Difference Player 1: " + percentageDifference);  // Log for debugging
-
         string message = "Invalid input";  // This is a fallback message
         Color color = Color.gray;  // Default color is gray
 
