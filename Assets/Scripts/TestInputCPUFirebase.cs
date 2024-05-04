@@ -27,11 +27,11 @@ public class TestInputCPUFirebase : MonoBehaviour
     public TMP_ColorGradient player1Gradient;
     public TMP_ColorGradient player2Gradient;
 
-    public InputField userInputField; 
-    public Text nonTMPText; // Reference to the Text for displaying the protein
-    public Text timerText; // Reference to the Text for displaying the timer
+    public TMP_InputField userInputField; 
+    public TextMeshProUGUI resultText;
+    public TextMeshProUGUI timerText;
     public TextMeshProUGUI playerTurn; // Reference to the TextMeshProGUI for displaying player turn
-    public TextMeshProUGUI TMPText; // Reference to the TextMeshProUGUI for displaying the protein
+    public TextMeshProUGUI proteinText; // Reference to the TextMeshProUGUI for displaying the protein
     public TextMeshProUGUI gramsText; // Reference to the TextMeshProUGUI for displaying the grams
     public TextMeshProUGUI scaleGramsText; // Reference to the TextMeshProUGUI for displaying scale grams
     public TextMeshProUGUI scoreText; // Reference to the TextMeshProUGUI for displaying the score
@@ -75,13 +75,14 @@ public class TestInputCPUFirebase : MonoBehaviour
 
     public TextMeshProUGUI player1AnswerText;
     public TextMeshProUGUI computerAnswerText;
+    Color orange = new Color(1f, 0.5f, 0f); // Define the orange color
 
     private void Start()
     {
         difficulty = DifficultyManager.Instance.Difficulty;
         maxRounds = RoundManagerCPU.Instance.RoundCount;
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
+        resultText.text = defaultResultText;
+        resultText.color = Color.cyan;
         startingPosition = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 1.1f, 10));
         UpdatePlayerTurnText();
         StartCoroutine(InitializeGame());
@@ -156,8 +157,8 @@ public class TestInputCPUFirebase : MonoBehaviour
         }
         else
         {
-            nonTMPText.text = "Please enter a valid number.";
-            nonTMPText.color = Color.red;
+            resultText.text = "Please enter a valid number.";
+            resultText.color = Color.red;
         }
     }
 
@@ -206,7 +207,7 @@ public class TestInputCPUFirebase : MonoBehaviour
         {
             player1Score += 2;
             message = "Bad Player 1.. +2 Points";
-            color = Color.red;
+            color = orange;
             bad.Play();
         }
         else if (percentageDifference > 50f)
@@ -216,15 +217,15 @@ public class TestInputCPUFirebase : MonoBehaviour
             dissapointing.Play();
         }
 
-        nonTMPText.text = message;
-        nonTMPText.color = color;
+        resultText.text = message;
+        resultText.color = color;
         UpdateScoreText();
 
         yield return new WaitForSeconds(2f);
 
         // Reset to default text and color
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
+        resultText.text = defaultResultText;
+        resultText.color = Color.cyan;
 
         // Transition to the next player or round
         isPlayer1Turn = false; // Switch turn
@@ -262,8 +263,8 @@ public class TestInputCPUFirebase : MonoBehaviour
         yield return new WaitForSeconds(2f); // Hold the expected result display
 
 
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan; // Set the color back to cyan or as needed
+        resultText.text = defaultResultText;
+        resultText.color = Color.cyan; // Set the color back to cyan or as needed
 
         round++;
         if (round > maxRounds)
@@ -275,7 +276,7 @@ public class TestInputCPUFirebase : MonoBehaviour
             isPlayer1Turn = true; // Switch turn back to Player 1
             UpdatePlayerTurnText();
             userInputField.text = ""; // Clear the input field as Player 1's turn starts
-            TMPText.text = ""; // Clear food name
+            proteinText.text = ""; // Clear food name
             gramsText.text = ""; // Clear grams display
             StartCoroutine(GenerateChickenBreastCoroutine()); // Prepare for next round
         }
@@ -327,7 +328,7 @@ public class TestInputCPUFirebase : MonoBehaviour
         {
             player2Score += 2;
             message = "Bad Computer.. +2 Points";
-            color = Color.red;
+            color = orange;
             bad.Play();
         }
         else if (aiPercentageDifference > 50f)
@@ -337,8 +338,8 @@ public class TestInputCPUFirebase : MonoBehaviour
             dissapointing.Play();
         }
 
-        nonTMPText.text = message;
-        nonTMPText.color = color;
+        resultText.text = message;
+        resultText.color = color;
         UpdateScoreText();
     }
     private float GenerateAIGuess(string protein, int grams)
@@ -450,8 +451,8 @@ public class TestInputCPUFirebase : MonoBehaviour
     private void DisplayExpectedResult()
     {
         float expectedOutput = proteins[currentProtein] * currentGrams;
-        nonTMPText.text = "Answer: " + expectedOutput.ToString("F2") + "g"; // Display the expected result formatted to two decimal places
-        nonTMPText.color = Color.cyan; // Change color if necessary
+        resultText.text = "Answer: " + expectedOutput.ToString("F2") + "g"; // Display the expected result formatted to two decimal places
+        resultText.color = Color.cyan; // Change color if necessary
         player1AnswerText.gameObject.SetActive(true);
         computerAnswerText.gameObject.SetActive(true);
     }
@@ -493,7 +494,7 @@ public class TestInputCPUFirebase : MonoBehaviour
             LogFoodInformation();
             yield return new WaitForSeconds(2.5f);
             audioSound.Play();
-            TMPText.text = currentProtein + "?";
+            proteinText.text = currentProtein + "?";
             
             currentImageID = GetImageID(currentProtein);
             if (currentImageID != -1)

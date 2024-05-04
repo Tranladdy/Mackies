@@ -31,11 +31,11 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
 
     public TMP_ColorGradient player1Gradient;
     public TMP_ColorGradient player2Gradient;
-    public InputField userInputField;
-    public Text nonTMPText;
-    public Text timerText;
+    public TMP_InputField userInputField; 
+    public TextMeshProUGUI resultText;
+    public TextMeshProUGUI timerText;
     public TextMeshProUGUI playerTurn;
-    public TextMeshProUGUI TMPText; // Reference to the TextMeshProUGUI for displaying the protein
+    public TextMeshProUGUI proteinText; // Reference to the TextMeshProUGUI for displaying the protein
     public TextMeshProUGUI gramsText; // Reference to the TextMeshProUGUI for displaying the grams
     public TextMeshProUGUI scaleGramsText; // Reference to the TextMeshProUGUI for displaying scale grams
     public TextMeshProUGUI scoreText; // Reference to the TextMeshProUGUI for displaying the score
@@ -77,6 +77,7 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
 
     public TextMeshProUGUI player1AnswerText;
     public TextMeshProUGUI player2AnswerText;
+    Color orange = new Color(1f, 0.5f, 0f); // Define the orange color
 
     private void Start()
     {
@@ -84,8 +85,8 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { "gameOver", false } });
         }
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
+        resultText.text = defaultResultText;
+        resultText.color = Color.cyan;
         startingPosition = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 1.1f, 10));
         userInputField.interactable = PhotonNetwork.IsMasterClient; // Master client starts first
         UpdatePlayerTurnText();
@@ -231,20 +232,20 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         }
         else
         {
-            nonTMPText.text = "Please enter a valid number.";
-            nonTMPText.color = Color.red;
+            resultText.text = "Please enter a valid number.";
+            resultText.color = Color.red;
         }
     }
 
     private IEnumerator DisplayResultsTemporary(string message, Color color)
     {
-        nonTMPText.text = message;
-        nonTMPText.color = color;
+        resultText.text = message;
+        resultText.color = color;
         yield return new WaitForSeconds(2f); // Display results for 2 seconds
-        nonTMPText.text = ""; // Optionally clear the text or set to default message
+        resultText.text = ""; // Optionally clear the text or set to default message
 
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
+        resultText.text = defaultResultText;
+        resultText.color = Color.cyan;
     }
 
     [PunRPC]
@@ -259,22 +260,22 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
     {
         player1Score = score1;
         player2Score = score2;
-        nonTMPText.text = message;
-        nonTMPText.color = new Color(r, g, b, a);
+        resultText.text = message;
+        resultText.color = new Color(r, g, b, a);
         UpdateScoreText();
     }
 
     [PunRPC]
     void ResetDefaultText()
     {
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
+        resultText.text = defaultResultText;
+        resultText.color = Color.cyan;
     }
 
     [PunRPC]
     void ClearText()
     {
-        TMPText.text = ""; // Clear food name
+        proteinText.text = ""; // Clear food name
         gramsText.text = ""; // Clear grams display
     }
 
@@ -325,7 +326,7 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         {
             pointsToAdd = 2;
             message = "Bad Player 1.. +2 Points";
-            color = Color.red;
+            color = orange;
             photonView.RPC("PlaySoundBad", RpcTarget.All);
         }
         else if (percentageDifference > 50f)
@@ -336,8 +337,8 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         }
 
         player1Score += pointsToAdd;
-        nonTMPText.text = message;
-        nonTMPText.color = color;
+        resultText.text = message;
+        resultText.color = color;
         photonView.RPC("UpdateScoresOnAllClients", RpcTarget.All, player1Score, player2Score, message, color.r, color.g, color.b, color.a);
         UpdateScoreText();
 
@@ -404,7 +405,7 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         {
             pointsToAdd = 2;
             message = "Bad Player 2.. +2 Points";
-            color = Color.red;
+            color = orange;
             photonView.RPC("PlaySoundBad", RpcTarget.All);
         }
         else if (percentageDifference > 50f)
@@ -415,8 +416,8 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         }
 
         player2Score += pointsToAdd;
-        nonTMPText.text = message;
-        nonTMPText.color = color;
+        resultText.text = message;
+        resultText.color = color;
         photonView.RPC("UpdateScoresOnAllClients", RpcTarget.All, player1Score, player2Score, message, color.r, color.g, color.b, color.a);
         UpdateScoreText();
 
@@ -440,7 +441,7 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
             // Show the expected result for 2 seconds
             yield return new WaitForSeconds(2f); 
 
-            nonTMPText.text = ""; // Clear the text
+            resultText.text = ""; // Clear the text
             photonView.RPC("ClearText", RpcTarget.All);
 
             // Call the end of game handling method on the GameManager
@@ -570,8 +571,8 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
     
     [PunRPC]
     void DisplayExpectedResultRPC(float expectedOutput) {
-        nonTMPText.text = "Answer: " + expectedOutput.ToString("F2") + "g";
-        nonTMPText.color = Color.cyan; // Set the text color as needed
+        resultText.text = "Answer: " + expectedOutput.ToString("F2") + "g";
+        resultText.color = Color.cyan; // Set the text color as needed
     }
 
     private void DisplayExpectedResult()
@@ -623,7 +624,7 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         scaleGramsText.text = grams + "";  // Update any other UI elements as necessary
 
         yield return new WaitForSeconds(2.5f);
-        TMPText.text = protein + "?";
+        proteinText.text = protein + "?";
         UpdateRoundText(); // Updates the round information on the UI
     }
 
@@ -674,7 +675,7 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
             LogFoodInformation();
             yield return new WaitForSeconds(2.5f);
             audioSound.Play();
-            TMPText.text = currentProtein + "?";
+            proteinText.text = currentProtein + "?";
             
             currentImageID = GetImageID(currentProtein);
             if (currentImageID != -1)

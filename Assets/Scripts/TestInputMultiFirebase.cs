@@ -11,6 +11,7 @@ using UnityEngine.Networking;
 
 public class TestInputMultiFirebase : MonoBehaviour
 {
+    public TMP_InputField userInputField;
     // Reference to the GameManager script
     public TestInputMultiFirebase gameManager;
     public GameObject gameCanvas;
@@ -21,11 +22,10 @@ public class TestInputMultiFirebase : MonoBehaviour
 
     public TMP_ColorGradient player1Gradient;
     public TMP_ColorGradient player2Gradient;
-    public InputField userInputField;
-    public Text nonTMPText;
-    public Text timerText;
+    public TextMeshProUGUI resultText;
+    public TextMeshProUGUI timerText;
     public TextMeshProUGUI playerTurn;
-    public TextMeshProUGUI TMPText; // Reference to the TextMeshProUGUI for displaying the protein
+    public TextMeshProUGUI proteinText; // Reference to the TextMeshProUGUI for displaying the protein
     public TextMeshProUGUI gramsText; // Reference to the TextMeshProUGUI for displaying the grams
     public TextMeshProUGUI scaleGramsText; // Reference to the TextMeshProUGUI for displaying scale grams
     public TextMeshProUGUI scoreText; // Reference to the TextMeshProUGUI for displaying the score
@@ -65,11 +65,13 @@ public class TestInputMultiFirebase : MonoBehaviour
     public TextMeshProUGUI player1AnswerText;
     public TextMeshProUGUI player2AnswerText;
 
+    Color orange = new Color(1f, 0.5f, 0f); // Define the orange color
+
     private void Start()
     {
         maxRounds = RoundManagerLocal.Instance.RoundCount;
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
+        resultText.text = defaultResultText;
+        resultText.color = Color.cyan;
         startingPosition = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 1.1f, 10));
         UpdatePlayerTurnText();
         StartCoroutine(InitializeGame());
@@ -151,8 +153,8 @@ public class TestInputMultiFirebase : MonoBehaviour
         }
         else
         {
-            nonTMPText.text = "Please enter a valid number.";
-            nonTMPText.color = Color.red;
+            resultText.text = "Please enter a valid number.";
+            resultText.color = Color.red;
         }
     }
 
@@ -202,7 +204,7 @@ public class TestInputMultiFirebase : MonoBehaviour
         {
             player1Score += 2;
             message = "Bad Player 1.. +2 Points";
-            color = Color.red;
+            color = orange;
             bad.Play();
         }
         else if (percentageDifference > 50f)
@@ -212,14 +214,14 @@ public class TestInputMultiFirebase : MonoBehaviour
             dissapointing.Play();
         }
 
-        nonTMPText.text = message;
-        nonTMPText.color = color;
+        resultText.text = message;
+        resultText.color = color;
         UpdateScoreText();
 
         yield return new WaitForSeconds(2f);
 
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
+        resultText.text = defaultResultText;
+        resultText.color = Color.cyan;
 
         // Transition to the next player or round
         isPlayer1Turn = false; // Switch turn
@@ -279,7 +281,7 @@ public class TestInputMultiFirebase : MonoBehaviour
         {
             player2Score += 2;
             message = "Bad Player 2.. +2 Points";
-            color = Color.red;
+            color = orange;
             bad.Play();
         }
         else if (percentageDifference > 50f)
@@ -289,8 +291,8 @@ public class TestInputMultiFirebase : MonoBehaviour
             dissapointing.Play();
         }
 
-        nonTMPText.text = message;
-        nonTMPText.color = color;
+        resultText.text = message;
+        resultText.color = color;
         UpdateScoreText();
 
         yield return new WaitForSeconds(2f);
@@ -300,9 +302,9 @@ public class TestInputMultiFirebase : MonoBehaviour
 
         yield return new WaitForSeconds(2f); // Show the expected result for 2 seconds
 
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
-        TMPText.text = ""; // Clear food name
+        resultText.text = defaultResultText;
+        resultText.color = Color.cyan;
+        proteinText.text = ""; // Clear food name
         gramsText.text = ""; // Clear grams display
 
         // Check if the current round is the last round
@@ -315,8 +317,8 @@ public class TestInputMultiFirebase : MonoBehaviour
             // Show the expected result for 2 seconds
             yield return new WaitForSeconds(2f); 
 
-            nonTMPText.text = ""; // Clear the text
-            TMPText.text = ""; // Clear food name
+            resultText.text = ""; // Clear the text
+            proteinText.text = ""; // Clear food name
             gramsText.text = ""; // Clear grams display
 
             // Call the end of game handling method on the GameManager
@@ -366,8 +368,8 @@ public class TestInputMultiFirebase : MonoBehaviour
     private void DisplayExpectedResult()
     {
         float expectedOutput = proteins[currentProtein] * currentGrams;
-        nonTMPText.text = "Answer: " + expectedOutput.ToString("F2") + "g";
-        nonTMPText.color = Color.cyan;
+        resultText.text = "Answer: " + expectedOutput.ToString("F2") + "g";
+        resultText.color = Color.cyan;
 
         // Enable TMP Text Objects
         player1AnswerText.gameObject.SetActive(true);
@@ -412,7 +414,7 @@ public class TestInputMultiFirebase : MonoBehaviour
             LogFoodInformation();
             yield return new WaitForSeconds(2.5f);
             audioSound.Play();
-            TMPText.text = currentProtein + "?";
+            proteinText.text = currentProtein + "?";
             
             currentImageID = GetImageID(currentProtein);
             if (currentImageID != -1)
@@ -581,8 +583,15 @@ public class TestInputMultiFirebase : MonoBehaviour
     private void HandleTimerExpired()
     {
         // Handle when the timer expires
-        userInputField.text = "0";
-        ValidateUserInput();
+        if (userInputField != null)
+        {
+            userInputField.text = "0";
+            ValidateUserInput();
+        }
+        else
+        {
+            Debug.LogWarning("userInputField is null in HandleTimerExpired");
+        }
     }
 
     private void UpdatePlayerTurnText()

@@ -16,9 +16,9 @@ public class TestInputPracticeFirebase : MonoBehaviour
     public GameObject gameCanvas;
     private string defaultResultText = "Waiting...";
 
-    public InputField userInputField;
-    public Text resultText;
-    public Text timerText;
+    public TMP_InputField userInputField;
+    public TextMeshProUGUI resultText;
+    public TextMeshProUGUI timerText;
     public TextMeshProUGUI proteinText; // Reference to the TextMeshProUGUI for displaying the protein
     public TextMeshProUGUI gramsText; // Reference to the TextMeshProUGUI for displaying the grams
     public TextMeshProUGUI scaleGramsText; // Reference to the TextMeshProUGUI for displaying scale grams
@@ -51,6 +51,8 @@ public class TestInputPracticeFirebase : MonoBehaviour
     public AudioSource great;
     public AudioSource excellent;
     public AudioSource perfect;
+
+    Color orange = new Color(1f, 0.5f, 0f); // Define the orange color
 
     private void Start()
     {
@@ -172,7 +174,7 @@ public class TestInputPracticeFirebase : MonoBehaviour
         {
             player1Score += 2;
             message = "Bad.. +2 Points";
-            color = Color.red;
+            color = orange;
             bad.Play();
         }
         else if (percentageDifference > 50f)
