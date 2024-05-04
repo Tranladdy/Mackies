@@ -9,8 +9,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: b545ee8806f973e4ca834a3020e848b0
   - enabled: 1
-    path: Assets/Scenes/PracticeFirebase.unity
-    guid: 30423b38f243fff4d9f23b3098cb97e5
+    path: Assets/Scenes/Single Practice Firebase.unity
+    guid: dad0f9d480442cd4aa88b3764577a147
   - enabled: 1
     path: Assets/Scenes/Multi Local Firebase.unity
     guid: 0cc29649ce585284b8829ecb16eb9f51
@@ -21,8 +21,14 @@ EditorBuildSettings:
     path: Assets/Scenes/Online Multiplayer Firebase.unity
     guid: 55554e9b29045124089baf6cc3a51a2a
   - enabled: 0
+    path: Assets/Scenes/PracticeFirebase.unity
+    guid: 30423b38f243fff4d9f23b3098cb97e5
+  - enabled: 0
     path: Assets/Scenes/Online Multiplayer.unity
     guid: 19b53889ca7bf1442a677b138b97f7dc
+  - enabled: 0
+    path: Assets/Scenes/Online Multiplayer Firebase 1.unity
+    guid: 9219ed3ba0cc15c419ebc07bc63bcbaa
   - enabled: 0
     path: Assets/Scenes/Practice.unity
     guid: 2cda990e2423bbf4892e6590ba056729

@@ -9,34 +9,25 @@ using UnityEngine.SceneManagement;
 using Firebase.Storage;
 using UnityEngine.Networking;
 
-public class TestInputMultiFirebase : MonoBehaviour
+public class TestInputPracticeFirebase : MonoBehaviour
 {
     // Reference to the GameManager script
-    public TestInputMultiFirebase gameManager;
+    public TestInputPracticeFirebase gameManager;
     public GameObject gameCanvas;
-    public GameObject player1VictoryScreen;
-    public GameObject player2VictoryScreen;
-    public GameObject tieScreen;
     private string defaultResultText = "Waiting...";
 
-    public TMP_ColorGradient player1Gradient;
-    public TMP_ColorGradient player2Gradient;
     public InputField userInputField;
-    public Text nonTMPText;
+    public Text resultText;
     public Text timerText;
-    public TextMeshProUGUI playerTurn;
-    public TextMeshProUGUI TMPText; // Reference to the TextMeshProUGUI for displaying the protein
+    public TextMeshProUGUI proteinText; // Reference to the TextMeshProUGUI for displaying the protein
     public TextMeshProUGUI gramsText; // Reference to the TextMeshProUGUI for displaying the grams
     public TextMeshProUGUI scaleGramsText; // Reference to the TextMeshProUGUI for displaying scale grams
     public TextMeshProUGUI scoreText; // Reference to the TextMeshProUGUI for displaying the score
-    public TextMeshProUGUI scoreText2; // Reference to the TextMeshProUGUI for displaying the score2
     public TextMeshProUGUI roundText; // Reference to the TextMeshProUGUI for displaying the round number
    
     public SpriteRenderer foodSpriteRenderer; // Reference to the SpriteRenderer for displaying the food image
 
     public int player1Score = 0; // Variable to store Player 1's score
-    public int player2Score = 0; // Variable to store Player 2's score
-    private bool isPlayer1Turn = true; // Variable to track whose turn it is
 
     private Dictionary<string, float> proteins = new Dictionary<string, float>(); // Dictionary to store proteins and their values
     private Dictionary<int, Sprite> foodImages = new Dictionary<int, Sprite>(); // Dictionary to store food images
@@ -48,7 +39,6 @@ public class TestInputMultiFirebase : MonoBehaviour
 
     private Vector3 startingPosition; // Variable to store the starting position of the sprite object
 
-    private int maxRounds;  // Added maxRounds variable
     private int round = 1; // Variable to store the current round number
 
     private const float timerDuration = 10f; // Duration of the timer in seconds
@@ -62,16 +52,11 @@ public class TestInputMultiFirebase : MonoBehaviour
     public AudioSource excellent;
     public AudioSource perfect;
 
-    public TextMeshProUGUI player1AnswerText;
-    public TextMeshProUGUI player2AnswerText;
-
     private void Start()
     {
-        maxRounds = RoundManagerLocal.Instance.RoundCount;
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
+        resultText.text = defaultResultText;
+        resultText.color = Color.cyan;
         startingPosition = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 1.1f, 10));
-        UpdatePlayerTurnText();
         StartCoroutine(InitializeGame());
     }
 
@@ -87,7 +72,7 @@ public class TestInputMultiFirebase : MonoBehaviour
         // Now safe to log information if currentProtein has been initialized
         if (!string.IsNullOrEmpty(currentProtein))
         {
-            LogFoodInformation();
+            LogFoodInformation();  // Ensure this is called after currentProtein is set
         }
     }
 
@@ -106,272 +91,122 @@ public class TestInputMultiFirebase : MonoBehaviour
     private void UpdateScoreText()
     {
         scoreText.text = "PLAYER 1 SCORE: " + player1Score.ToString();
-        scoreText2.text = "PLAYER 2 SCORE: " + player2Score.ToString();
     }
 
     private void UpdateRoundText()
     {
-        roundText.text = "Round: " + round.ToString() + "/" + maxRounds;
+        roundText.text = "Round: " + round.ToString() + "/∞";
         UpdateScoreText();
     }
 
     public void ValidateUserInput()
     {
-
         Debug.Log("ValidateUserInput called"); // Add this for debugging
         string input = userInputField.text;
         float userInput;
         bool isValidInput = float.TryParse(input, out userInput);
 
-        if (isValidInput)
+        if (isValidInput && currentProtein != null && proteins.ContainsKey(currentProtein))
         {
-            // Stop all running coroutines to reset the game state
-            StopAllCoroutines();
+            userInputField.interactable = false;
+            StopAllCoroutines(); // Stop ongoing coroutines
 
             float proteinValue = proteins[currentProtein];
             float expectedOutput = proteinValue * currentGrams;
             float percentageDifference = Mathf.Abs(userInput - expectedOutput) / expectedOutput * 100;
-
-            // Display results and manage game state transitions
-            if (isPlayer1Turn)
-            {
-                player1AnswerText.text = input + "g";
-                StartCoroutine(UpdateScorePlayer1(percentageDifference));
-                isPlayer1Turn = false;
-            }
-            else
-            {
-                player2AnswerText.text = input + "g";
-                StartCoroutine(UpdateScorePlayer2(percentageDifference));
-                isPlayer1Turn = true;
-            }
+            StartCoroutine(UpdateScorePlayer(percentageDifference));
 
             // Clear the input field
             userInputField.text = "";
         }
         else
         {
-            nonTMPText.text = "Please enter a valid number.";
-            nonTMPText.color = Color.red;
+            resultText.text = "Please enter a valid number.";
+            resultText.color = Color.red;
         }
     }
 
-    private IEnumerator UpdateScorePlayer1(float percentageDifference)
+    private IEnumerator UpdateScorePlayer(float percentageDifference)
     {
-        Debug.Log($"Player 1 scored with a percentage difference of: {percentageDifference}"); // Debugging line
+        Debug.Log($"Player scored with a percentage difference of: {percentageDifference}"); // Debugging line
 
-        string message = "Invalid input";
-        Color color = Color.gray;
+        string message = "Invalid input";  // This is a fallback message
+        Color color = Color.gray;  // Default color is gray
 
         if (percentageDifference <= 2.5f)
         {
             player1Score += 12;
-            message = "Perfect Player 1!!!! +12 Points";
+            message = "Perfect!!!! +12 Points";
             color = Color.cyan;
             perfect.Play();
         }
         else if (percentageDifference <= 7f)
         {
             player1Score += 6;
-            message = "Excellent Player 1!!! +6 Points";
+            message = "Excellent!!! +6 Points";
             color = Color.green;
             excellent.Play();
         }
         else if (percentageDifference <= 9f)
         {
             player1Score += 5;
-            message = "Great Job Player 1! +5 Points";
+            message = "Great Job! +5 Points";
             color = Color.green;
             great.Play();
         }
         else if (percentageDifference <= 30f)
         {
             player1Score += 4;
-            message = "Good Job Player 1 +4 Points";
+            message = "Good Job +4 Points";
             color = Color.yellow;
             good.Play();
         }
         else if (percentageDifference <= 40f)
         {
             player1Score += 3;
-            message = "Unsatisfactory Player 1. +3 Points";
+            message = "Unsatisfactory. +3 Points";
             color = Color.yellow;
             okay.Play();
         }
         else if (percentageDifference <= 50f)
         {
             player1Score += 2;
-            message = "Bad Player 1.. +2 Points";
+            message = "Bad.. +2 Points";
             color = Color.red;
             bad.Play();
         }
         else if (percentageDifference > 50f)
         {
-            message = "Disappointing Player 1...";
+            message = "Disappointing...";
             color = Color.red;
             dissapointing.Play();
         }
 
-        nonTMPText.text = message;
-        nonTMPText.color = color;
+        resultText.text = message;
+        resultText.color = color;
         UpdateScoreText();
 
-        yield return new WaitForSeconds(2f);
-
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
-
-        // Transition to the next player or round
-        isPlayer1Turn = false; // Switch turn
-        UpdatePlayerTurnText();
-        if (isPlayer1Turn)
-        {
-            StartCoroutine(GenerateChickenBreastCoroutine());
-        }
-        else
-        {
-            StartCoroutine(TimerCoroutine()); // Restart timer for next player
-        }
-    }
-
-
-    private IEnumerator UpdateScorePlayer2(float percentageDifference)
-    {
-        string message = "Invalid input";
-        Color color = Color.gray;
-
-        if (percentageDifference <= 2.5f)
-        {
-            player2Score += 12;
-            message = "Perfect Player 2!!!! +12 Points";
-            color = Color.cyan;
-            perfect.Play();
-        }
-        else if (percentageDifference <= 7f)
-        {
-            player2Score += 6;
-            message = "Excellent Player 2!!! +6 Points";
-            color = Color.green;
-            excellent.Play();
-        }
-        else if (percentageDifference <= 9f)
-        {
-            player2Score += 5;
-            message = "Great Job Player 2! +5 Points";
-            color = Color.green;
-            great.Play();
-        }
-        else if (percentageDifference <= 30f)
-        {
-            player2Score += 4;
-            message = "Good Job Player 2 +4 Points";
-            color = Color.yellow;
-            good.Play();
-        }
-        else if (percentageDifference <= 40f)
-        {
-            player2Score += 3;
-            message = "Unsatisfactory Player 2. +3 Points";
-            color = Color.yellow;
-            okay.Play();
-        }
-        else if (percentageDifference <= 50f)
-        {
-            player2Score += 2;
-            message = "Bad Player 2.. +2 Points";
-            color = Color.red;
-            bad.Play();
-        }
-        else if (percentageDifference > 50f)
-        {
-            message = "Disappointing Player 2...";
-            color = Color.red;
-            dissapointing.Play();
-        }
-
-        nonTMPText.text = message;
-        nonTMPText.color = color;
-        UpdateScoreText();
-
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
 
         // Display the expected result
         DisplayExpectedResult();
 
         yield return new WaitForSeconds(2f); // Show the expected result for 2 seconds
 
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
-        TMPText.text = ""; // Clear food name
+        resultText.text = defaultResultText;
+        resultText.color = Color.cyan;
+        proteinText.text = ""; // Clear food name
         gramsText.text = ""; // Clear grams display
 
-        // Check if the current round is the last round
+        StartCoroutine(GenerateChickenBreastCoroutine());
         round++; // Increment round count
-        if (round > maxRounds)
-        {
-            // This is the final round, so we handle the end of the game
-            DisplayExpectedResult();
-
-            // Show the expected result for 2 seconds
-            yield return new WaitForSeconds(2f); 
-
-            nonTMPText.text = ""; // Clear the text
-            TMPText.text = ""; // Clear food name
-            gramsText.text = ""; // Clear grams display
-
-            // Call the end of game handling method on the GameManager
-            gameManager.HandleEndOfGame();
-        }
-        else
-        {
-            // Not the final round, so just prepare for the next round
-            isPlayer1Turn = true; // Switch turn back to player 1
-            UpdatePlayerTurnText();
-            StartCoroutine(GenerateChickenBreastCoroutine()); // Initiate next round
-        }
-    }
-
-    public void HandleEndOfGame()
-    {
-        // Deactivate the Game Canvas
-        if (gameCanvas != null)
-        {
-            gameCanvas.SetActive(false);
-        }
-
-        // Activate the appropriate victory screen
-        if (player1Score > player2Score)
-        {
-            if (player1VictoryScreen != null)
-            {
-                player1VictoryScreen.SetActive(true);
-            }
-        }
-        else if (player2Score > player1Score)
-        {
-            if (player2VictoryScreen != null)
-            {
-                player2VictoryScreen.SetActive(true);
-            }
-        }
-        else // It's a tie
-        {
-            if (tieScreen != null)
-            {
-                tieScreen.SetActive(true);
-            }
-        }
     }
 
     private void DisplayExpectedResult()
     {
         float expectedOutput = proteins[currentProtein] * currentGrams;
-        nonTMPText.text = "Answer: " + expectedOutput.ToString("F2") + "g";
-        nonTMPText.color = Color.cyan;
-
-        // Enable TMP Text Objects
-        player1AnswerText.gameObject.SetActive(true);
-        player2AnswerText.gameObject.SetActive(true);
+        resultText.text = "Answer: " + expectedOutput.ToString("F2") + "g"; // Display the expected result formatted to two decimal places
+        resultText.color = Color.cyan;
     }
 
     private int GenerateRandomGrams()
@@ -404,16 +239,17 @@ public class TestInputMultiFirebase : MonoBehaviour
             currentProtein = new List<string>(proteins.Keys)[randomIndex];
             currentGrams = GenerateRandomGrams();
             
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(0.5f);
             gramsText.text = currentGrams + "g";  // Display the generated grams in UI
             audioSound.Play();
             scaleGramsText.text = currentGrams + "";  // Update any other UI elements as necessary
 
             LogFoodInformation();
-            yield return new WaitForSeconds(2.5f);
+            yield return new WaitForSeconds(1.5f);
             audioSound.Play();
-            TMPText.text = currentProtein + "?";
+            proteinText.text = currentProtein + "?";
             
+            // Get the image ID for the current protein and load it
             currentImageID = GetImageID(currentProtein);
             if (currentImageID != -1)
             {
@@ -427,6 +263,7 @@ public class TestInputMultiFirebase : MonoBehaviour
                 }
             }
 
+        userInputField.interactable = true;
             StartCoroutine(TimerCoroutine());
         }
     }
@@ -503,7 +340,7 @@ public class TestInputMultiFirebase : MonoBehaviour
 
     private IEnumerator DownloadAndSetImage(string imageId)
     {
-        string accessToken = "636d15af-2cb2-4628-8c0c-bd30fd47629f";
+        string accessToken = "636d15af-2cb2-4628-8c0c-bd30fd47629f"; // Example token
         string imageUrl = $"https://firebasestorage.googleapis.com/v0/b/mackies-9f1b0.appspot.com/o/FoodImages%2F{imageId}.png?alt=media&token={accessToken}";
 
         Debug.Log("Requesting image from URL: " + imageUrl); // This will log the exact URL
@@ -522,7 +359,7 @@ public class TestInputMultiFirebase : MonoBehaviour
             int parsedId = int.Parse(imageId);
             if (parsedId != -1)
             {
-                foodImages[parsedId] = newSprite; // Add or replace the sprite in the dictionary
+                foodImages[parsedId] = newSprite;
 
                 // Ensure the sprite is set for animation
                 SetFoodImage();
@@ -563,6 +400,7 @@ public class TestInputMultiFirebase : MonoBehaviour
             yield return null;
         }
 
+        // If the timer expires, handle it
         HandleTimerExpired();
     }
 
@@ -584,23 +422,4 @@ public class TestInputMultiFirebase : MonoBehaviour
         userInputField.text = "0";
         ValidateUserInput();
     }
-
-    private void UpdatePlayerTurnText()
-    {
-        if (isPlayer1Turn)
-        {
-            playerTurn.text = "Player 1's Turn";
-            playerTurn.colorGradientPreset = player1Gradient;
-            // Disable TMP Text Objects
-            player1AnswerText.gameObject.SetActive(false);
-            player2AnswerText.gameObject.SetActive(false);
-        }
-        else
-        {
-            playerTurn.text = "Player 2's Turn";
-            playerTurn.colorGradientPreset = player2Gradient;
-        }
-        playerTurn.ForceMeshUpdate(); // Update the mesh to apply the gradient
-    }
-
 }

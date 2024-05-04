@@ -22,7 +22,7 @@ public class TestInputCPUFirebase : MonoBehaviour
     public GameObject player1VictoryScreen;
     public GameObject player2VictoryScreen;
     public GameObject tieScreen;
-    private string defaultResultText = "Awaiting result...";
+    private string defaultResultText = "Waiting...";
 
     public TMP_ColorGradient player1Gradient;
     public TMP_ColorGradient player2Gradient;
@@ -73,20 +73,16 @@ public class TestInputCPUFirebase : MonoBehaviour
     public AudioSource excellent;
     public AudioSource perfect;
 
+    public TextMeshProUGUI player1AnswerText;
+    public TextMeshProUGUI computerAnswerText;
+
     private void Start()
     {
-        // Initialize from RoundManager
         difficulty = DifficultyManager.Instance.Difficulty;
-        maxRounds = RoundManagerCPU.Instance.RoundCount;  // Retrieve the number of rounds from RoundManager
+        maxRounds = RoundManagerCPU.Instance.RoundCount;
         nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan; // Ensure it starts as cyan
-        // Get the starting position outside the main camera's view
+        nonTMPText.color = Color.cyan;
         startingPosition = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 1.1f, 10));
-        //LoadProteinsFromCSV(); // Load proteins from CSV file
-        //LoadFoodImages(); // Load food images
-        //StartCoroutine(GenerateChickenBreastCoroutine()); // Start coroutine
-        //UpdateRoundText(); // Update round text
-        //LogFoodInformation(); // Debugger for information
         UpdatePlayerTurnText();
         StartCoroutine(InitializeGame());
     }
@@ -95,9 +91,6 @@ public class TestInputCPUFirebase : MonoBehaviour
     {
         // Start loading proteins from CSV
         yield return StartCoroutine(LoadProteinsFromCSV());
-
-        // Assuming LoadFoodImages depends on proteins being loaded
-        //LoadFoodImages();
 
         // Start the main game functionality once data is ready
         StartCoroutine(GenerateChickenBreastCoroutine());
@@ -142,6 +135,7 @@ public class TestInputCPUFirebase : MonoBehaviour
 
         if (isValidInput)
         {
+            userInputField.interactable = false;
             StopAllCoroutines(); // Stop ongoing coroutines
 
             float proteinValue = proteins[currentProtein];
@@ -150,6 +144,7 @@ public class TestInputCPUFirebase : MonoBehaviour
 
             if (isPlayer1Turn)
             {
+                player1AnswerText.text = input + "g";
                 StartCoroutine(UpdateScorePlayer1(percentageDifference));
                 isPlayer1Turn = false; // Switch to AI's turn
             }
@@ -164,16 +159,6 @@ public class TestInputCPUFirebase : MonoBehaviour
             nonTMPText.text = "Please enter a valid number.";
             nonTMPText.color = Color.red;
         }
-    }
-
-    private IEnumerator DisplayResultsTemporary(string message, Color color)
-    {
-        nonTMPText.text = message;
-        nonTMPText.color = color;
-        yield return new WaitForSeconds(2f); // Display results for 2 seconds
-        
-        nonTMPText.text = defaultResultText;
-        nonTMPText.color = Color.cyan;
     }
 
     private IEnumerator UpdateScorePlayer1(float percentageDifference)
@@ -265,7 +250,8 @@ public class TestInputCPUFirebase : MonoBehaviour
         float expectedOutput = proteins[currentProtein] * currentGrams;
         float aiPercentageDifference = Mathf.Abs(aiGuess - expectedOutput) / expectedOutput * 100;
 
-        userInputField.text = aiGuess.ToString("F2");
+        computerAnswerText.text = aiGuess.ToString("F2") + "g";
+
         ValidateAIInput(aiGuess, aiPercentageDifference);
 
         yield return new WaitForSeconds(2f); // Display AI's results briefly
@@ -366,34 +352,34 @@ public class TestInputCPUFirebase : MonoBehaviour
             switch (DifficultyManager.Instance.Difficulty)
             {
                 case 1: // Easy
+                    if (randomPicker < 0.005) // 0.5% Perfect
+                        variance = UnityEngine.Random.Range(-2.5f, 2.5f);
+                    else if (randomPicker < 0.055) // 5% Great to Excellent
+                        variance = UnityEngine.Random.Range(-9f, 9f);
+                    else if (randomPicker < 0.395) // 34% Good to Unsatisfactory
+                        variance = UnityEngine.Random.Range(-40f, 40f);
+                    else // 60% Bad to Disappointing
+                        variance = UnityEngine.Random.Range(-60f, -50f);
+                    break;
+                case 2: // Normal
                     if (randomPicker < 0.05) // 5% Perfect
                         variance = UnityEngine.Random.Range(-2.5f, 2.5f);
                     else if (randomPicker < 0.20) // 15% Great to Excellent
                         variance = UnityEngine.Random.Range(-9f, 9f);
-                    else if (randomPicker < 0.60) // 40% Good to Unsatisfactory
+                    else if (randomPicker < 0.70) // 50% Good to Unsatisfactory
                         variance = UnityEngine.Random.Range(-40f, 40f);
-                    else // 40% Bad to Disappointing
-                        variance = UnityEngine.Random.Range(-50f, -30f);
-                    break;
-                case 2: // Normal
-                    if (randomPicker < 0.10)
-                        variance = UnityEngine.Random.Range(-50f, -30f); // Bad to Disappointing
-                    else if (randomPicker < 0.50)
-                        variance = UnityEngine.Random.Range(-40f, 40f); // Good to Unsatisfactory
-                    else if (randomPicker < 0.90)
-                        variance = UnityEngine.Random.Range(-9f, 9f); // Great to Excellent
-                    else
-                        variance = UnityEngine.Random.Range(-2.5f, 2.5f); // Perfect
+                    else // 30% Bad to Disappointing
+                        variance = UnityEngine.Random.Range(-60f, -50f);
                     break;
                 case 3: // Hard
-                    if (randomPicker < 0.05)
-                        variance = UnityEngine.Random.Range(-50f, -30f); // 5% Bad to Disappointing
-                    else if (randomPicker < 0.20)
-                        variance = UnityEngine.Random.Range(-40f, 40f); // 15% Good to Unsatisfactory
-                    else if (randomPicker < 0.50)
-                        variance = UnityEngine.Random.Range(-2.5f, 2.5f); // 30% Perfect
-                    else
-                        variance = UnityEngine.Random.Range(-9f, 9f); // 50% Great to Excellent
+                    if (randomPicker < 0.35) // 35% Perfect
+                        variance = UnityEngine.Random.Range(-2.5f, 2.5f);
+                    else if (randomPicker < 0.80) // 45% Great to Excellent
+                        variance = UnityEngine.Random.Range(-9f, 9f);
+                    else if (randomPicker < 0.95) // 15% Good to Unsatisfactory
+                        variance = UnityEngine.Random.Range(-40f, 40f);
+                    else // 5% Bad to Disappointing
+                        variance = UnityEngine.Random.Range(-60f, -50f);
                     break;
                 default:
                     variance = UnityEngine.Random.Range(-10f, 10f);
@@ -466,6 +452,8 @@ public class TestInputCPUFirebase : MonoBehaviour
         float expectedOutput = proteins[currentProtein] * currentGrams;
         nonTMPText.text = "Answer: " + expectedOutput.ToString("F2") + "g"; // Display the expected result formatted to two decimal places
         nonTMPText.color = Color.cyan; // Change color if necessary
+        player1AnswerText.gameObject.SetActive(true);
+        computerAnswerText.gameObject.SetActive(true);
     }
 
     private int GenerateRandomGrams()
@@ -487,7 +475,6 @@ public class TestInputCPUFirebase : MonoBehaviour
 
     private IEnumerator GenerateChickenBreastCoroutine()
     {
-        // Wait until proteins are loaded
         yield return new WaitUntil(() => proteins.Count > 0);
 
         UpdateRoundText();
@@ -508,19 +495,15 @@ public class TestInputCPUFirebase : MonoBehaviour
             audioSound.Play();
             TMPText.text = currentProtein + "?";
             
-            // Get the image ID for the current protein and load it
             currentImageID = GetImageID(currentProtein);
             if (currentImageID != -1)
             {
-                // Only load the image if it hasn't been loaded before
                 if (!foodImages.ContainsKey(currentImageID))
                 {
-                    // DownloadAndSetImage should now be responsible for activating the sprite renderer once the image is ready
                     StartCoroutine(DownloadAndSetImage(currentImageID.ToString()));
                 }
                 else
                 {
-                    // If the image is already loaded, just activate it and start the falling effect
                     ActivateFoodSprite(currentImageID);
                 }
             }
@@ -576,29 +559,10 @@ public class TestInputCPUFirebase : MonoBehaviour
         }
     }
 
-    private void LoadFoodImages()
-    {
-        // Load food images from folder
-        Sprite[] sprites = Resources.LoadAll<Sprite>("FoodImages");
-
-        // Assign each image to its corresponding image ID
-        foreach (Sprite sprite in sprites)
-        {
-            int imageID;
-            if (int.TryParse(sprite.name, out imageID))
-            {
-                foodImages.Add(imageID, sprite);
-
-                // Adjust the scale of the sprite to ensure consistent size
-                AdjustSpriteScale(sprite);
-            }
-        }
-    }
-
     private void ParseCSV(string csvData)
     {
         StringReader reader = new StringReader(csvData);
-        string line = reader.ReadLine();  // Skip header if present.
+        string line = reader.ReadLine();
 
         while ((line = reader.ReadLine()) != null)
         {
@@ -620,10 +584,10 @@ public class TestInputCPUFirebase : MonoBehaviour
 
     private IEnumerator DownloadAndSetImage(string imageId)
     {
-        string accessToken = "636d15af-2cb2-4628-8c0c-bd30fd47629f"; // Example token
+        string accessToken = "636d15af-2cb2-4628-8c0c-bd30fd47629f";
         string imageUrl = $"https://firebasestorage.googleapis.com/v0/b/mackies-9f1b0.appspot.com/o/FoodImages%2F{imageId}.png?alt=media&token={accessToken}";
         
-        Debug.Log("Requesting image from URL: " + imageUrl); // This will log the exact URL
+        Debug.Log("Requesting image from URL: " + imageUrl);
         
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(imageUrl);
         yield return www.SendWebRequest();
@@ -639,10 +603,10 @@ public class TestInputCPUFirebase : MonoBehaviour
             int parsedId = int.Parse(imageId);
             if (parsedId != -1)
             {
-                foodImages[parsedId] = newSprite; // Add or replace the sprite in the dictionary
+                foodImages[parsedId] = newSprite;
 
                 // Ensure the sprite is set for animation
-                SetFoodImage(); // Call this here to ensure the image is set right after being loaded
+                SetFoodImage();
             }
         }
     }
@@ -654,17 +618,6 @@ public class TestInputCPUFirebase : MonoBehaviour
             foodSpriteRenderer.sprite = foodImages[imageId];
             foodSpriteRenderer.gameObject.SetActive(true);
         }
-    }
-
-    private void AdjustSpriteScale(Sprite sprite)
-    {
-        // Calculate the desired scale based on the original aspect ratio of the image
-        float aspectRatio = sprite.rect.width / sprite.rect.height;
-        float desiredWidth = 0.25f; // Set the desired width of the sprite
-        float desiredHeight = desiredWidth / aspectRatio;
-
-        // Set the scale of the sprite
-        foodSpriteRenderer.transform.localScale = new Vector3(desiredWidth, desiredHeight, 1f);
     }
 
     private int GetImageID(string protein)
@@ -727,7 +680,6 @@ public class TestInputCPUFirebase : MonoBehaviour
     private void HandleTimerExpired()
     {
         // Handle when the timer expires
-        // For example, defaulting the answer to zero
         userInputField.text = "0";
         if(isPlayer1Turn == true)
         {
@@ -736,23 +688,22 @@ public class TestInputCPUFirebase : MonoBehaviour
         
     }
 
-    private void ResetFoodSpritePosition()
-    {
-    // Set the position of the sprite object to its starting position
-    foodSpriteRenderer.transform.position = startingPosition; // Assuming startingPosition is a Vector3 representing the starting position of the sprite object
-    }
-
     private void UpdatePlayerTurnText()
     {
         if (isPlayer1Turn)
         {
             playerTurn.text = "Player 1's Turn";
             playerTurn.colorGradientPreset = player1Gradient;
+            userInputField.interactable = true;
+            // Disable TMP Text Objects
+            player1AnswerText.gameObject.SetActive(false);
+            computerAnswerText.gameObject.SetActive(false);
         }
         else
         {
             playerTurn.text = "Computer's Turn";
             playerTurn.colorGradientPreset = player2Gradient;
+            userInputField.interactable = true;
         }
         playerTurn.ForceMeshUpdate(); // Update the mesh to apply the gradient
     }

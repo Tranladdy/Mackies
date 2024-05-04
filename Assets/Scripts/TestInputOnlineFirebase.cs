@@ -12,6 +12,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using PlayFab.ClientModels;
 using PlayFab;
+using Unity.VisualScripting;
 
 public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
 {
@@ -25,6 +26,7 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
     public GameObject eventSystemGame;
     public GameObject eventSystemWinQuit;
     public GameObject tieScreen;
+    public GameObject pauseButton;
     private string defaultResultText = "Waiting...";
 
     public TMP_ColorGradient player1Gradient;
@@ -73,8 +75,15 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
     public AudioSource excellent;
     public AudioSource perfect;
 
+    public TextMeshProUGUI player1AnswerText;
+    public TextMeshProUGUI player2AnswerText;
+
     private void Start()
     {
+        if (PhotonNetwork.IsConnected && PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { "gameOver", false } });
+        }
         nonTMPText.text = defaultResultText;
         nonTMPText.color = Color.cyan;
         startingPosition = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 1.1f, 10));
@@ -130,9 +139,6 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         // Start loading proteins from CSV
         yield return StartCoroutine(LoadProteinsFromCSV());
 
-        // Assuming LoadFoodImages depends on proteins being loaded
-        //LoadFoodImages();
-
         // Start the main game functionality once data is ready
         StartCoroutine(GenerateChickenBreastCoroutine());
         UpdateRoundText();
@@ -174,6 +180,18 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         StopAllCoroutines();  // This stops all coroutines on the client where it's called.
     }
 
+    [PunRPC]
+    void UpdatePlayer1Guess(string guess)
+    {
+        player1AnswerText.text = guess + "g";
+    }
+
+    [PunRPC]
+    void UpdatePlayer2Guess(string guess)
+    {
+        player2AnswerText.text = guess + "g";
+    }
+
     public void ValidateUserInput()
     {
 
@@ -184,6 +202,7 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
 
         if (isValidInput)
         {
+            userInputField.interactable = false;
             // Stop all running coroutines to reset the game state
             photonView.RPC("StopAllCoroutinesOnClients", RpcTarget.All);
 
@@ -194,13 +213,17 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
             // Display results and manage game state transitions
             if (isPlayer1Turn)
             {
+                photonView.RPC("UpdatePlayer1Guess", RpcTarget.All, input);
                 StartCoroutine(UpdateScorePlayer1(percentageDifference));
                 isPlayer1Turn = false;
+                photonView.RPC("UpdatePlayerTurn", RpcTarget.All, isPlayer1Turn);
             }
             else
             {
+                photonView.RPC("UpdatePlayer2Guess", RpcTarget.All, input);
                 StartCoroutine(UpdateScorePlayer2(percentageDifference));
                 isPlayer1Turn = true;
+                photonView.RPC("UpdatePlayerTurn", RpcTarget.All, isPlayer1Turn);
             }
 
             // Clear the input field
@@ -438,6 +461,12 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
     {
         gameOfficiallyEnded = true;  // Set a flag to indicate that the game has officially ended.
 
+        // Set game over room property
+        if (PhotonNetwork.IsConnected && PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { "gameOver", true } });
+        }
+
         // Deactivate the game canvas
         if (gameCanvas != null)
         {
@@ -522,6 +551,10 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
                         ShowVictoryScreenQuit(player2VictoryScreenQuit);
                         Debug.Log("Showing Player 2 Victory Screen.");
                     }
+
+                    // Mark the room as "gameOver" to prevent new players from joining
+                    PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { "gameOver", true } });
+
                     break;
                 }
             }
@@ -545,6 +578,14 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
     {
         float expectedOutput = proteins[currentProtein] * currentGrams;
         photonView.RPC("DisplayExpectedResultRPC", RpcTarget.All, expectedOutput);
+        photonView.RPC("SetAnswerTextVisibility", RpcTarget.All, true);
+    }
+
+    [PunRPC]
+    void SetAnswerTextVisibility(bool visible)
+    {
+        player1AnswerText.gameObject.SetActive(visible);
+        player2AnswerText.gameObject.SetActive(visible);
     }
 
     private int GenerateRandomGrams()
@@ -635,20 +676,15 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
             audioSound.Play();
             TMPText.text = currentProtein + "?";
             
-            // Get the image ID for the current protein and load it
             currentImageID = GetImageID(currentProtein);
             if (currentImageID != -1)
             {
-                // Only load the image if it hasn't been loaded before
                 if (!foodImages.ContainsKey(currentImageID))
                 {
-                    // DownloadAndSetImage should now be responsible for activating the sprite renderer once the image is ready
                     StartCoroutine(DownloadAndSetImage(currentImageID.ToString(), true));
                 }
                 else
                 {
-                    // If the image is already loaded, just activate it and start the falling effect
-
                     ActivateFoodSprite(currentImageID);
                     photonView.RPC("UpdateFoodImageOnAllClients", RpcTarget.All, currentImageID.ToString());
                 }
@@ -708,7 +744,7 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
     private void ParseCSV(string csvData)
     {
         StringReader reader = new StringReader(csvData);
-        string line = reader.ReadLine();  // Skip header if present.
+        string line = reader.ReadLine();
 
         while ((line = reader.ReadLine()) != null)
         {
@@ -728,20 +764,9 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         }
     }
 
-    private void LoadFoodImages()
-    {
-        // Assuming you have a way to map from protein names to their IDs
-        foreach (var protein in proteins.Keys)
-        {
-            string imageId = GetImageID(protein).ToString();
-            StartCoroutine(DownloadAndSetImage(imageId));
-        }
-    }
-
-    // DownloadAndSetImage now expects an ID, not a name
     private IEnumerator DownloadAndSetImage(string imageId, bool triggerUpdate = false)
     {
-        string accessToken = "636d15af-2cb2-4628-8c0c-bd30fd47629f"; // Example token
+        string accessToken = "636d15af-2cb2-4628-8c0c-bd30fd47629f";
         string imageUrl = $"https://firebasestorage.googleapis.com/v0/b/mackies-9f1b0.appspot.com/o/FoodImages%2F{imageId}.png?alt=media&token={accessToken}";
 
         Debug.Log("Downloading image from URL: " + imageUrl);
@@ -777,18 +802,6 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         {
             Debug.LogWarning("Attempted to activate a sprite that doesn't exist: " + imageId);
         }
-    }
-
-
-    private void AdjustSpriteScale(Sprite sprite)
-    {
-        // Calculate the desired scale based on the original aspect ratio of the image
-        float aspectRatio = sprite.rect.width / sprite.rect.height;
-        float desiredWidth = 0.25f; // Set the desired width of the sprite
-        float desiredHeight = desiredWidth / aspectRatio;
-
-        // Set the scale of the sprite
-        foodSpriteRenderer.transform.localScale = new Vector3(desiredWidth, desiredHeight, 1f);
     }
 
     private int GetImageID(string protein)
@@ -839,21 +852,21 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
 
     private void HandleTimerExpired()
     {
-        // Handle when the timer expires
-        // For example, defaulting the answer to zero
-        userInputField.text = "0";
-        ValidateUserInput();
+        // Check if this client is the current active player
+        if ((isPlayer1Turn && PhotonNetwork.IsMasterClient) || (!isPlayer1Turn && !PhotonNetwork.IsMasterClient))
+        {
+            // Only validate if input field is interactable
+            if (userInputField.interactable)
+            {
+                userInputField.text = "0";
+                ValidateUserInput();
+            }
 
-        // Switch turns
-        isPlayer1Turn = !isPlayer1Turn;
-        photonView.RPC("UpdatePlayerTurn", RpcTarget.All, isPlayer1Turn);
-        UpdatePlayerTurnText();
-    }
-
-    private void ResetFoodSpritePosition()
-    {
-    // Set the position of the sprite object to its starting position
-    foodSpriteRenderer.transform.position = startingPosition; // Assuming startingPosition is a Vector3 representing the starting position of the sprite object
+            // Switch turns
+            isPlayer1Turn = !isPlayer1Turn;
+            photonView.RPC("UpdatePlayerTurn", RpcTarget.All, isPlayer1Turn);
+            UpdatePlayerTurnText();
+        }
     }
 
     private void UpdatePlayerTurnText()
@@ -865,6 +878,7 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
 
             // Enable input for Player 1 if this client is the master client
             userInputField.interactable = PhotonNetwork.IsMasterClient;
+            photonView.RPC("SetAnswerTextVisibility", RpcTarget.All, false);
         }
         else
         {

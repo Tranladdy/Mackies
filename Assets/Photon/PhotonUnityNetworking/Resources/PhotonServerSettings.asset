@@ -19,7 +19,7 @@ MonoBehaviour:
     AppIdVoice: 
     AppVersion: 
     UseNameServer: 1
-    FixedRegion: 
+    FixedRegion: usw
     Server: 
     Port: 0
     ProxyServer: 
@@ -82,6 +82,10 @@ MonoBehaviour:
   - PlaySoundGreat
   - PlaySoundOkay
   - PlaySoundPerfect
+  - UpdatePlayer1Guess
+  - UpdatePlayer2Guess
+  - SetAnswerTextVisibility
+  - SetBackButtonVisibilityRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 {
     public GameObject player1Prefab;
     public GameObject player2Prefab;
+    public GameObject backButton;
     public GameObject eventSystemWaiting;
     public GameObject eventSystemGame;
     public TextMeshProUGUI statusText;
@@ -35,8 +36,15 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
             photonView.RPC("UpdateStatusTextRPC", RpcTarget.All, "PLAYER FOUND! LOADING...");
+            photonView.RPC("SetBackButtonVisibilityRPC", RpcTarget.All, false); // Hide back button on all clients
             StartCoroutine(UpdateUIWithDelay(7.0f));
         }
+    }
+
+    [PunRPC]
+    void SetBackButtonVisibilityRPC(bool visible)
+    {
+        backButton.SetActive(false);
     }
 
     [PunRPC]

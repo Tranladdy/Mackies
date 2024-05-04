@@ -26,6 +26,7 @@ public class QuestionPop : MonoBehaviour
             StartCoroutine(EnableObjectWithDelay(objectToEnable1, delayTime1));
             StartCoroutine(EnableObjectWithDelay(objectToEnable2, delayTime2));
             StartCoroutine(EnableObjectWithDelay(objectToEnable3, delayTime3));
+            StartCoroutine(EnableObjectWithDelay(objectToEnable4, delayTime3));
             audioSound.Play();
         }
         else if(obj.gameObject.CompareTag("Food"))

@@ -1,9 +1,14 @@
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using ExitGames.Client.Photon;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
+
+    [SerializeField]
+    private string preferredRegion = "usw"; // Set this to your preferred region
+
     void Start()
     {
         ConnectToPhoton();
@@ -18,6 +23,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         if (!PhotonNetwork.IsConnected)
         {
+            PhotonNetwork.PhotonServerSettings.AppSettings.FixedRegion = preferredRegion;
             PhotonNetwork.ConnectUsingSettings();  // Only connect if not already connected
         }
     }
@@ -26,7 +32,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsConnected)
         {
-            PhotonNetwork.JoinRandomRoom();  // Try joining a room if already connected to Photon
+            // SQL-like filter to only join rooms where gameOver is false
+            Hashtable expectedProperties = new Hashtable { { "gameOver", false } };
+            PhotonNetwork.JoinRandomRoom(expectedProperties, 0);  // Try joining a room that is not marked as game over
         }
         else
         {
@@ -36,17 +44,35 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        Debug.Log("Tried to join a room and failed, creating a new room.");
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
+        Debug.Log("Tried to join a room and failed, no available rooms that meet the criteria. Creating a new room.");
+        RoomOptions roomOptions = new RoomOptions { 
+            MaxPlayers = 2, 
+            CustomRoomProperties = new Hashtable { { "gameOver", false } },
+            CustomRoomPropertiesForLobby = new string[] { "gameOver" }  // Ensure 'gameOver' is visible in lobby filters
+        };
+        PhotonNetwork.CreateRoom(null, roomOptions);
     }
 
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined a room!");
-        if (PhotonNetwork.IsMasterClient)
+
+        // Optionally, double-check the room's game over status (for edge cases)
+        if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("gameOver", out object status) && (bool)status)
+        {
+            Debug.Log("Joined a room that was marked as game over, leaving...");
+            PhotonNetwork.LeaveRoom();
+        }
+        else if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.LoadLevel(4);
         }
+    }
+
+    public void SetGameOver(bool isGameOver)
+    {
+        // Set room property when game is over
+        PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { "gameOver", isGameOver } });
     }
 
     public override void OnLeftRoom()
@@ -86,14 +112,21 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnMasterClientSwitched(Photon.Realtime.Player newMasterClient)
     {
         Debug.Log("New Master Client: " + newMasterClient.NickName);
+
         if (PhotonNetwork.IsMasterClient)
         {
-            // The new master client might need to perform cleanup or other actions.
+            // Check if the game is over, and if so, set the room property accordingly
+            if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("gameOver", out object status) && (bool)status)
+            {
+                PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { "gameOver", true } });
+            }
         }
     }
 
     public void LeaveRoomAndReturnToLobby()
     {
+        // Set the room as "gameOver" before leaving
+        PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { "gameOver", true } });
         if (PhotonNetwork.InRoom)
             PhotonNetwork.LeaveRoom();
     }
