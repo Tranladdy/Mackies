@@ -15,6 +15,7 @@ public class PlayfabManager : MonoBehaviour
 
     [Header("UI")]
     public TMP_Text messageText;
+    public TMP_Text loginButtonText;
 
     public InputField emailInput;
     public InputField passwordInput;
@@ -41,6 +42,18 @@ public class PlayfabManager : MonoBehaviour
         ToggleTextGameObjectBasedOnLogin();
     }
 
+    public void UpdateLoginButtonText()
+    {
+        if (PlayFabClientAPI.IsClientLoggedIn())
+        {
+            loginButtonText.text = "LOGOUT";  // Set the button text to LOGOUT if the user is logged in
+        }
+        else
+        {
+            loginButtonText.text = "LOGIN";  // Set the button text to LOGIN if the user is not logged in
+        }
+    }
+
     public static class UserSessionInfo
     {
         public static string DisplayName { get; private set; }
@@ -48,6 +61,19 @@ public class PlayfabManager : MonoBehaviour
         public static void SetDisplayName(string displayName)
         {
             DisplayName = displayName;
+        }
+    }
+
+    public void ClearLoginFields() 
+    {
+        if (emailInput != null) {
+            emailInput.text = ""; // Clear the email input field
+        }
+        if (passwordInput != null) {
+            passwordInput.text = ""; // Clear the password input field
+        }
+        if (messageText != null) {
+            messageText.text = ""; // Reset the message text
         }
     }
 
@@ -94,11 +120,23 @@ public class PlayfabManager : MonoBehaviour
     }
 
     public void LoginButton() {
-        var request = new LoginWithEmailAddressRequest {
-            Email = emailInput.text,
-            Password = passwordInput.text
-        };
-        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
+        // Toggle between Login and Logout based on the current text of the button
+        if (loginButtonText.text == "LOGOUT") {
+            Logout();
+        } else {
+            var request = new LoginWithEmailAddressRequest {
+                Email = emailInput.text,
+                Password = passwordInput.text
+            };
+            PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
+        }
+    }
+
+    void Logout() {
+        PlayFabClientAPI.ForgetAllCredentials(); // This effectively logs the user out
+        loginButtonText.text = "LOGIN";
+        messageText.text = "LOGGED OUT!";
+        mainMenuDisplayNameText.text = "LOGGED IN AS: GUEST";
     }
 
     public void ResetPasswordButton() {
@@ -132,6 +170,7 @@ public class PlayfabManager : MonoBehaviour
     void OnLoginSuccess(LoginResult result) {
         Debug.Log("OnLoginSuccess called");
         messageText.text = "LOGGED IN!";
+        loginButtonText.text = "LOGOUT"; // Update the button text to "LOGOUT"
         GetAccountInfo(result.PlayFabId);
         ToggleTextGameObjectBasedOnLogin();
     }
@@ -185,6 +224,8 @@ public class PlayfabManager : MonoBehaviour
     void OnError(PlayFabError error) {
         messageText.text = error.ErrorMessage;
         Debug.Log(error.GenerateErrorReport());
+        if (!PlayFabClientAPI.IsClientLoggedIn())
+            loginButtonText.text = "LOGIN";
     }
 
     public void SendLeaderboard(int score) {
@@ -203,7 +244,56 @@ public class PlayfabManager : MonoBehaviour
         Debug.Log("Successful leaderboard sent");
     }
 
+    public void ShowPersonalRankingOnly() {
+        if (!PlayFabClientAPI.IsClientLoggedIn()) {
+            warningText.GetComponent<TMP_Text>().text = "MUST BE LOGGED IN TO SEE LEADERBOARD";
+            return;
+        }
+
+        // First, clear the existing leaderboard items
+        foreach (Transform item in rowsParent) {
+            Destroy(item.gameObject);
+        }
+
+        // Request to get the player's rank in the leaderboard
+        var request = new GetLeaderboardAroundPlayerRequest {
+            StatisticName = "Score Leaderboard",
+            MaxResultsCount = 1
+        };
+        PlayFabClientAPI.GetLeaderboardAroundPlayer(request, OnPersonalRankReceived, OnError);
+    }
+
+    void OnPersonalRankReceived(GetLeaderboardAroundPlayerResult result) {
+        if (result.Leaderboard != null && result.Leaderboard.Count > 0) {
+            foreach (var item in result.Leaderboard) {
+                GameObject newGo = Instantiate(rowPrefab, rowsParent);
+                TMP_Text[] texts = newGo.GetComponentsInChildren<TMP_Text>();
+                texts[0].text = (item.Position + 1).ToString();
+                texts[1].text = item.DisplayName;
+                texts[2].text = item.StatValue.ToString();
+            }
+        }
+    }
+
     public void GetLeaderboard() {
+        if (!PlayFabClientAPI.IsClientLoggedIn()) {
+            // Clear the leaderboard if not logged in
+            foreach (Transform item in rowsParent) {
+                Destroy(item.gameObject);
+            }
+            // Ensure the warningText GameObject is set to active and update its text
+            if (warningText != null) {
+                warningText.SetActive(true);
+                warningText.GetComponent<TMP_Text>().text = "MUST BE LOGGED IN TO SEE LEADERBOARD";
+            }
+            return; // Stop further execution if the user is not logged in
+        } else {
+            // Hide the warning text when the user is logged in and can see the leaderboard
+            if (warningText != null) {
+                warningText.SetActive(false);
+            }
+        }
+
         var request = new GetLeaderboardRequest {
             StatisticName = "Score Leaderboard",
             StartPosition = 0,

@@ -798,6 +798,9 @@ public class TestInputOnlineFirebase : MonoBehaviourPunCallbacks
         {
             foodSpriteRenderer.sprite = foodImages[imageId];
             foodSpriteRenderer.gameObject.SetActive(true);
+            // Reset the position of the sprite to the starting position each time it is activated
+            foodSpriteRenderer.transform.position = startingPosition;
+            StartCoroutine(FallIntoPlace(foodSpriteRenderer.transform, new Vector3(startingPosition.x, 0, startingPosition.z), 0.5f));
         }
         else
         {

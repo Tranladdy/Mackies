@@ -5678,6 +5678,7 @@ MonoBehaviour:
   rowPrefab: {fileID: 0}
   rowsParent: {fileID: 0}
   messageText: {fileID: 0}
+  loginButtonText: {fileID: 0}
   emailInput: {fileID: 0}
   passwordInput: {fileID: 0}
   displayNameUI: {fileID: 0}
@@ -9023,8 +9024,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 132634013}
-  - {fileID: 391823740}
   - {fileID: 1704211912}
+  - {fileID: 391823740}
   - {fileID: 499075839}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -10256,7 +10257,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
